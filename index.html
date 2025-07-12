@@ -5,6 +5,7 @@
   <title>Monitoring PDAM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
   <div class="logo-pdam">
@@ -19,6 +20,9 @@
   <label>Nomor Pelanggan:</label>
   <input type="text" id="nomorPelanggan" onblur="lookupPelanggan()" placeholder="Contoh: 11010001">
 
+  <button onclick="startQRScan()">📷 Scan QR</button>
+  <div id="reader" style="display:none;"></div>
+
   <div class="lookup-result">
     <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
     <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
@@ -27,6 +31,9 @@
     <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
     <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
   </div>
+
+  <label>Catatan Petugas:</label>
+  <textarea id="catatan" placeholder="Contoh: Pelanggan akan bayar sebelum tanggal 20 atau disegel."></textarea>
 
   <label>Foto Rumah:</label>
   <input type="file" id="foto" accept="image/*" capture="environment">
