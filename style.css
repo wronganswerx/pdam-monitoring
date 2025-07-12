@@ -1,0 +1,39 @@
+body {
+  font-family: Arial;
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+  position: relative;
+}
+
+label {
+  font-weight: bold;
+}
+
+input, button {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 8px;
+}
+
+#lokasiText {
+  color: green;
+}
+
+.logo-pdam {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.logo-pdam img {
+  height: 50px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: gray;
+  margin-top: 30px;
+}
