@@ -42,10 +42,15 @@
   <input type="text" id="nomorPelanggan" placeholder="Contoh: 12345678">
 
   <!-- Hasil lookup -->
-  <div class="lookup-result">
-    <p><strong>Nama Pelanggan:</strong> <span id="namaPelanggan">-</span></p>
-    <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
-  </div>
+<div class="lookup-result">
+  <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
+  <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
+  <p><strong>Kelurahan:</strong> <span id="kelurahanPelanggan">-</span></p>
+  <p><strong>RT / RW:</strong> <span id="rtrwPelanggan">-</span></p>
+  <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
+  <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
+</div>
+
 
   <label>Foto Rumah:</label>
   <input type="file" id="foto" accept="image/*" capture="environment">
@@ -116,9 +121,17 @@
           if (data.error) {
             document.getElementById("namaPelanggan").innerText = "-";
             document.getElementById("alamatPelanggan").innerText = "Tidak ditemukan";
+            document.getElementById("kelurahanPelanggan").innerText = "-";
+            document.getElementById("rtrwPelanggan").innerText = "-";
+            document.getElementById("golonganPelanggan").innerText = "-";
+            document.getElementById("meterPelanggan").innerText = "-";
           } else {
             document.getElementById("namaPelanggan").innerText = data.nama;
             document.getElementById("alamatPelanggan").innerText = data.alamat;
+            document.getElementById("kelurahanPelanggan").innerText = data.kelurahan;
+            document.getElementById("rtrwPelanggan").innerText = `${data.rt} / ${data.rw}`;
+            document.getElementById("golonganPelanggan").innerText = data.gol;
+            document.getElementById("meterPelanggan").innerText = data.meter;
           }
         })
         .catch(err => {
