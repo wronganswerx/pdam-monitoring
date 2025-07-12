@@ -11,6 +11,7 @@
     #lokasiText { color: green; }
     .logo-pdam { position: absolute; top: 10px; right: 10px; }
     .logo-pdam img { height: 50px; }
+    .footer { text-align: center; font-size: 12px; color: gray; margin-top: 30px; }
   </style>
 </head>
 <body>
@@ -24,7 +25,7 @@
   <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad">
 
   <label>Nomor Pelanggan:</label>
-  <input type="text" id="nomorPelanggan" oninput="lookupPelanggan()" placeholder="Contoh: 11010001">
+  <input type="text" id="nomorPelanggan" onblur="lookupPelanggan()" placeholder="Contoh: 11010001">
 
   <div class="lookup-result">
     <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
@@ -41,7 +42,11 @@
   <button onclick="getLocation()">Ambil Lokasi</button>
   <p id="lokasiText">Lokasi: belum diambil</p>
 
-  <button onclick="submitData()">Kirim</button>
+  <button id="submitBtn" onclick="submitData()">Kirim</button>
+
+  <p class="footer">
+    WebApp ini masih uji coba yang disusun oleh Irsyad
+  </p>
 
   <script>
     let latitude = "";
@@ -66,6 +71,14 @@
       const nomor = document.getElementById("nomorPelanggan").value.trim();
       if (nomor.length < 5) return;
 
+      // Tampilkan loading dulu
+      document.getElementById("namaPelanggan").innerText = "⏳ Mencari...";
+      document.getElementById("alamatPelanggan").innerText = "";
+      document.getElementById("kelurahanPelanggan").innerText = "";
+      document.getElementById("rtrwPelanggan").innerText = "";
+      document.getElementById("golonganPelanggan").innerText = "";
+      document.getElementById("meterPelanggan").innerText = "";
+
       fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec?nomor=" + nomor)
         .then(res => res.json())
         .then(data => {
@@ -84,6 +97,9 @@
             document.getElementById("golonganPelanggan").innerText = data.gol;
             document.getElementById("meterPelanggan").innerText = data.meter;
           }
+        })
+        .catch(() => {
+          document.getElementById("namaPelanggan").innerText = "❌ Gagal ambil data";
         });
     }
 
@@ -91,11 +107,15 @@
       const nama = document.getElementById("nama").value.trim();
       const nomor = document.getElementById("nomorPelanggan").value.trim();
       const file = document.getElementById("foto").files[0];
+      const btn = document.getElementById("submitBtn");
 
       if (!nama || !nomor || !file || !latitude || !longitude) {
         alert("Semua data wajib diisi dan lokasi harus diambil.");
         return;
       }
+
+      btn.disabled = true;
+      btn.innerText = "Mengirim...";
 
       const reader = new FileReader();
       reader.onload = function() {
@@ -113,10 +133,14 @@
         })
         .then(res => res.text())
         .then(res => {
-          alert("Berhasil dikirim!");
+          alert("✅ Berhasil dikirim!");
           window.location.reload();
         })
-        .catch(err => alert("Gagal kirim: " + err));
+        .catch(err => {
+          alert("❌ Gagal kirim: " + err);
+          btn.disabled = false;
+          btn.innerText = "Kirim";
+        });
       };
 
       reader.readAsDataURL(file);
