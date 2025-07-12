@@ -55,6 +55,7 @@ function submitData() {
   const nama = document.getElementById("nama").value.trim();
   const nomor = document.getElementById("nomorPelanggan").value.trim();
   const file = document.getElementById("foto").files[0];
+  const catatan = document.getElementById("catatan").value.trim();
   const btn = document.getElementById("submitBtn");
 
   if (!nama || !nomor || !file || !latitude || !longitude) {
@@ -74,6 +75,7 @@ function submitData() {
       body: new URLSearchParams({
         nama: nama,
         nomor: nomor,
+        catatan: catatan,
         latitude: latitude,
         longitude: longitude,
         foto: base64Foto
@@ -92,4 +94,31 @@ function submitData() {
   };
 
   reader.readAsDataURL(file);
+}
+
+// QR Scanner
+function startQRScan() {
+  const qrDiv = document.getElementById("reader");
+  qrDiv.style.display = "block";
+
+  const html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: { width: 200, height: 200 }
+    },
+    (decodedText, decodedResult) => {
+      document.getElementById("nomorPelanggan").value = decodedText;
+      lookupPelanggan();
+      html5QrCode.stop();
+      qrDiv.style.display = "none";
+    },
+    (errorMessage) => {
+      // skip error
+    }
+  ).catch((err) => {
+    alert("Gagal memulai scanner: " + err);
+    qrDiv.style.display = "none";
+  });
 }
