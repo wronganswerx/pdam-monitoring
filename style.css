@@ -10,11 +10,15 @@ label {
   font-weight: bold;
 }
 
-input, button {
+input, button, textarea {
   width: 100%;
   margin-top: 5px;
   margin-bottom: 15px;
   padding: 8px;
+}
+
+textarea {
+  min-height: 60px;
 }
 
 #lokasiText {
