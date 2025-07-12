@@ -9,23 +9,8 @@
     label { font-weight: bold; }
     input, button { width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
     #lokasiText { color: green; }
-
-    .logo-pdam {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-
-    .logo-pdam img {
-      height: 50px;
-    }
-
-    .lookup-result {
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-    }
+    .logo-pdam { position: absolute; top: 10px; right: 10px; }
+    .logo-pdam img { height: 50px; }
   </style>
 </head>
 <body>
@@ -36,21 +21,19 @@
   <h2>Monitoring RPP PDAM</h2>
 
   <label>Nama Petugas:</label>
-  <input type="text" id="nama" placeholder="Contoh: Irsyad">
+  <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad">
 
   <label>Nomor Pelanggan:</label>
-  <input type="text" id="nomorPelanggan" placeholder="Contoh: 12345678">
+  <input type="text" id="nomorPelanggan" oninput="lookupPelanggan()" placeholder="Contoh: 11010001">
 
-  <!-- Hasil lookup -->
-<div class="lookup-result">
-  <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
-  <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
-  <p><strong>Kelurahan:</strong> <span id="kelurahanPelanggan">-</span></p>
-  <p><strong>RT / RW:</strong> <span id="rtrwPelanggan">-</span></p>
-  <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
-  <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
-</div>
-
+  <div class="lookup-result">
+    <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
+    <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
+    <p><strong>Kelurahan:</strong> <span id="kelurahanPelanggan">-</span></p>
+    <p><strong>RT / RW:</strong> <span id="rtrwPelanggan">-</span></p>
+    <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
+    <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
+  </div>
 
   <label>Foto Rumah:</label>
   <input type="file" id="foto" accept="image/*" capture="environment">
@@ -64,58 +47,26 @@
     let latitude = "";
     let longitude = "";
 
-    // Ambil lokasi GPS
     function getLocation() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          latitude = position.coords.latitude;
-          longitude = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          latitude = pos.coords.latitude;
+          longitude = pos.coords.longitude;
           document.getElementById("lokasiText").innerText =
             "Lokasi: " + latitude + ", " + longitude;
-        }, function(error) {
-          alert("Gagal ambil lokasi. Aktifkan GPS dan izinkan lokasi.");
+        }, function() {
+          alert("Gagal ambil lokasi.");
         });
       } else {
         alert("Browser tidak mendukung GPS.");
       }
     }
 
-    // Submit data ke Apps Script
-    function submitData() {
-      const nama = document.getElementById("nama").value;
-      const nomor = document.getElementById("nomorPelanggan").value;
-      const file = document.getElementById("foto").files[0];
+    function lookupPelanggan() {
+      const nomor = document.getElementById("nomorPelanggan").value.trim();
+      if (nomor.length < 5) return;
 
-      if (!nama || !nomor || !file || !latitude || !longitude) {
-        alert("Semua data wajib diisi dan lokasi harus diambil.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("nama", nama);
-      formData.append("nomor", nomor);
-      formData.append("foto", file);
-      formData.append("latitude", latitude);
-      formData.append("longitude", longitude);
-
-      fetch("https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.text())
-      .then(res => {
-        alert("Berhasil dikirim!");
-        window.location.reload();
-      })
-      .catch(err => alert("Gagal kirim: " + err));
-    }
-
-    // Lookup otomatis berdasarkan nomor pelanggan
-    document.getElementById("nomorPelanggan").addEventListener("blur", function () {
-      const nomor = this.value;
-      if (!nomor) return;
-
-      fetch(`https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec?nomor=${nomor}`)
+      fetch("https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec?nomor=" + nomor)
         .then(res => res.json())
         .then(data => {
           if (data.error) {
@@ -133,11 +84,43 @@
             document.getElementById("golonganPelanggan").innerText = data.gol;
             document.getElementById("meterPelanggan").innerText = data.meter;
           }
-        })
-        .catch(err => {
-          console.error("Gagal ambil data pelanggan:", err);
         });
-    });
+    }
+
+    function submitData() {
+      const nama = document.getElementById("nama").value.trim();
+      const nomor = document.getElementById("nomorPelanggan").value.trim();
+      const file = document.getElementById("foto").files[0];
+
+      if (!nama || !nomor || !file || !latitude || !longitude) {
+        alert("Semua data wajib diisi dan lokasi harus diambil.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function() {
+        const base64Foto = reader.result.split(",")[1];
+
+        fetch("https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec", {
+          method: "POST",
+          body: new URLSearchParams({
+            nama: nama,
+            nomor: nomor,
+            latitude: latitude,
+            longitude: longitude,
+            foto: base64Foto
+          })
+        })
+        .then(res => res.text())
+        .then(res => {
+          alert("Berhasil dikirim!");
+          window.location.reload();
+        })
+        .catch(err => alert("Gagal kirim: " + err));
+      };
+
+      reader.readAsDataURL(file);
+    }
   </script>
 </body>
 </html>
