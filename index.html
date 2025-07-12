@@ -5,13 +5,29 @@
   <title>Monitoring PDAM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial; padding: 20px; max-width: 500px; margin: auto; }
+    body { font-family: Arial; padding: 20px; max-width: 500px; margin: auto; position: relative; }
     label { font-weight: bold; }
     input, button { width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
     #lokasiText { color: green; }
+
+    /* Logo di pojok kanan atas */
+    .logo-pdam {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .logo-pdam img {
+      height: 50px;
+    }
   </style>
 </head>
 <body>
+  <!-- Logo PDAM -->
+  <div class="logo-pdam">
+    <img src="pdam logo.jpg" alt="Logo PDAM">
+  </div>
+
   <h2>Monitoring RPP PDAM</h2>
 
   <label>Nama Petugas:</label>
@@ -64,7 +80,6 @@
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
 
-      // GANTI LINK DI BAWAH DENGAN LINK APPS SCRIPT KAMU NANTI
       fetch("https://script.google.com/macros/s/AKxxx_SCRIPT_KAMU/exec", {
         method: "POST",
         body: formData
