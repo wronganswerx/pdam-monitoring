@@ -2,16 +2,19 @@ let latitude = "";
 let longitude = "";
 
 function getLocation() {
+  const lokasiText = document.getElementById("lokasiText");
+  lokasiText.innerText = "📍 Mengambil lokasi...";
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(pos) {
       latitude = pos.coords.latitude;
       longitude = pos.coords.longitude;
-      document.getElementById("lokasiText").innerText =
-        "Lokasi: " + latitude + ", " + longitude;
+      lokasiText.innerText = "Lokasi: " + latitude + ", " + longitude;
     }, function() {
+      lokasiText.innerText = "❌ Gagal ambil lokasi.";
       alert("Gagal ambil lokasi.");
     });
   } else {
+    lokasiText.innerText = "❌ Browser tidak mendukung GPS.";
     alert("Browser tidak mendukung GPS.");
   }
 }
