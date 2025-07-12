@@ -4,6 +4,7 @@ let longitude = "";
 function getLocation() {
   const lokasiText = document.getElementById("lokasiText");
   lokasiText.innerText = "📍 Mengambil lokasi...";
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(pos) {
       latitude = pos.coords.latitude;
@@ -67,7 +68,7 @@ function submitData() {
   }
 
   btn.disabled = true;
-  btn.innerText = "Mengirim...";
+  btn.innerText = "⏳ Mengirim...";
 
   const reader = new FileReader();
   reader.onload = function() {
