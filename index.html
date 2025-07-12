@@ -10,7 +10,6 @@
     input, button { width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
     #lokasiText { color: green; }
 
-    /* Logo di pojok kanan atas */
     .logo-pdam {
       position: absolute;
       top: 10px;
@@ -20,10 +19,16 @@
     .logo-pdam img {
       height: 50px;
     }
+
+    .lookup-result {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
-  <!-- Logo PDAM -->
   <div class="logo-pdam">
     <img src="pdam logo.jpg" alt="Logo PDAM">
   </div>
@@ -35,6 +40,12 @@
 
   <label>Nomor Pelanggan:</label>
   <input type="text" id="nomorPelanggan" placeholder="Contoh: 12345678">
+
+  <!-- Hasil lookup -->
+  <div class="lookup-result">
+    <p><strong>Nama Pelanggan:</strong> <span id="namaPelanggan">-</span></p>
+    <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
+  </div>
 
   <label>Foto Rumah:</label>
   <input type="file" id="foto" accept="image/*" capture="environment">
@@ -48,6 +59,7 @@
     let latitude = "";
     let longitude = "";
 
+    // Ambil lokasi GPS
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -63,6 +75,7 @@
       }
     }
 
+    // Submit data ke Apps Script
     function submitData() {
       const nama = document.getElementById("nama").value;
       const nomor = document.getElementById("nomorPelanggan").value;
@@ -80,7 +93,7 @@
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
 
-      fetch("https://script.google.com/macros/s/AKxxx_SCRIPT_KAMU/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec", {
         method: "POST",
         body: formData
       })
@@ -91,6 +104,27 @@
       })
       .catch(err => alert("Gagal kirim: " + err));
     }
+
+    // Lookup otomatis berdasarkan nomor pelanggan
+    document.getElementById("nomorPelanggan").addEventListener("blur", function () {
+      const nomor = this.value;
+      if (!nomor) return;
+
+      fetch(`https://script.google.com/macros/s/AKfycbzBuWc5hrFeU5jv9ElFnm0Oo26VIWMRzlEIE-028Web5dnM7mkd3_u3olfe6MltN5qR/exec?nomor=${nomor}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById("namaPelanggan").innerText = "-";
+            document.getElementById("alamatPelanggan").innerText = "Tidak ditemukan";
+          } else {
+            document.getElementById("namaPelanggan").innerText = data.nama;
+            document.getElementById("alamatPelanggan").innerText = data.alamat;
+          }
+        })
+        .catch(err => {
+          console.error("Gagal ambil data pelanggan:", err);
+        });
+    });
   </script>
 </body>
 </html>
