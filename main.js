@@ -96,16 +96,15 @@ function submitData() {
     .then(() => {
       alert("✅ Berhasil dikirim!");
       saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-      btn.disabled = false;
-      btn.innerText = "Kirim";
       resetForm();
     })
     .catch(() => {
       alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
       saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
+    })
+    .finally(() => {
       btn.disabled = false;
       btn.innerText = "Kirim";
-      resetForm();
     });
   };
 
