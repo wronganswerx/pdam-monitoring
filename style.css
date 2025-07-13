@@ -35,10 +35,8 @@ input[type="text"],
 input[type="file"] {
   width: 90%;
   padding: 8px;
-  margin-bottom: 10px;
+  margin: 0 auto 10px;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -52,10 +50,44 @@ button {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
   background-color: #0056b3;
+}
+
+/* Tombol disable */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner kecil saat loading */
+button.loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+button.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ====== Lokasi ====== */
@@ -75,7 +107,7 @@ button:hover {
   color: #777;
 }
 
-/* ====== Lookup ====== */
+/* ====== Lookup Result ====== */
 .lookup-result p {
   margin: 3px 0;
 }
@@ -102,7 +134,7 @@ button:hover {
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   z-index: 999;
 }
 
@@ -133,7 +165,7 @@ button:hover {
   color: white;
 }
 
-/* ====== Riwayat ====== */
+/* ====== Riwayat Card ====== */
 #riwayatList {
   padding: 15px;
 }
