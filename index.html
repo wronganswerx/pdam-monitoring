@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Monitoring PDAM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitoring RPP PDAM</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- MENU HAMBURGER -->
+  <!-- Tombol Menu Hamburger -->
   <div id="menuToggle" onclick="toggleMenu()">☰</div>
   <div id="menu" class="hidden">
     <button onclick="showPage('formPage')">🏠 Halaman Utama</button>
     <button onclick="showPage('riwayatPage')">📄 Riwayat & Upload Ulang</button>
   </div>
 
-  <!-- HALAMAN FORM UTAMA -->
+  <!-- HALAMAN UTAMA -->
   <div id="formPage" class="page">
     <div class="logo-pdam">
       <img src="pdam logo.jpg" alt="Logo PDAM">
@@ -24,10 +24,10 @@
     <h2>Monitoring RPP PDAM</h2>
 
     <label>Nama Petugas:</label>
-    <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad">
+    <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad" />
 
     <label>Nomor Pelanggan:</label>
-    <input type="text" id="nomorPelanggan" onblur="lookupPelanggan()" placeholder="Contoh: 11010001">
+    <input type="text" id="nomorPelanggan" placeholder="Contoh: 11010001" onblur="lookupPelanggan()" />
 
     <div class="lookup-result">
       <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
@@ -39,26 +39,26 @@
     </div>
 
     <label>Foto Rumah:</label>
-    <input type="file" id="foto" accept="image/*" capture="environment">
+    <input type="file" id="foto" accept="image/*" capture="environment" />
 
     <label>Catatan Petugas:</label>
-    <input type="text" id="catatan" placeholder="Misal: Rumah kosong, tidak ditemukan, dsb">
+    <input type="text" id="catatan" placeholder="Misal: Rumah kosong, tidak ditemukan, dsb" />
 
     <button onclick="getLocation()">Ambil Lokasi</button>
     <p id="lokasiText">Lokasi: belum diambil</p>
 
     <button id="submitBtn" onclick="submitData()">Kirim</button>
 
-    <p class="footer">
-      WebApp ini masih uji coba yang disusun oleh Irsyad
-    </p>
+    <div id="reader" style="display: none;"></div>
+
+    <p class="footer">WebApp ini masih uji coba yang disusun oleh Irsyad</p>
   </div>
 
-  <!-- HALAMAN RIWAYAT & UPLOAD ULANG -->
+  <!-- HALAMAN RIWAYAT -->
   <div id="riwayatPage" class="page" style="display: none;">
-    <h2>Riwayat Kunjungan</h2>
+    <h2>Riwayat Kunjungan Anda</h2>
     <div id="riwayatList">
-      <p>🔄 Memuat data...</p>
+      <p>⏳ Memuat data...</p>
     </div>
     <button onclick="uploadSemua()">Upload Ulang Semua</button>
   </div>
