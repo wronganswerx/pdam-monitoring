@@ -1,36 +1,74 @@
-#hamburger {
-  font-size: 32px;
-  cursor: pointer;
+/* Toggle Menu Button (Hamburger) */
+#menuToggle {
   position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 999;
+  top: 15px;
+  left: 15px;
+  font-size: 28px;
+  background: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s;
 }
 
-.menu-popup {
-  display: none;
+#menuToggle:hover {
+  background: #555;
+}
+
+/* Dropdown Menu */
+#menu {
   position: fixed;
-  top: 50px;
-  left: 10px;
+  top: 60px;
+  left: 15px;
   background: white;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   z-index: 999;
 }
 
-.menu-popup button {
+#menu.hidden {
+  display: none;
+}
+
+#menu button {
   display: block;
-  width: 150px;
-  padding: 10px;
+  background: none;
   border: none;
+  padding: 10px;
+  width: 180px;
   text-align: left;
-  background: #f5f5f5;
   cursor: pointer;
+  font-size: 16px;
 }
 
-.menu-popup button:hover {
-  background: #ddd;
+#menu button:hover {
+  background: #f0f0f0;
 }
 
+/* Halaman */
 .page {
-  margin-top: 50px;
+  margin-top: 60px;
+  padding: 20px;
+}
+
+/* Riwayat List */
+#riwayatList {
+  padding: 15px;
+}
+
+/* Kartu Riwayat */
+.riwayat-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.riwayat-card p {
+  margin: 4px 0;
 }
