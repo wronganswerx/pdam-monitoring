@@ -8,14 +8,14 @@
 </head>
 <body>
 
-  <!-- Hamburger Menu -->
-  <div id="hamburger">&#9776;</div>
-  <div id="menuPopup" class="menu-popup">
-    <button onclick="showPage('form')">Halaman Utama</button>
-    <button onclick="showPage('riwayat')">Riwayat & Upload Ulang</button>
+  <!-- MENU HAMBURGER -->
+  <div id="menuToggle" onclick="toggleMenu()">☰</div>
+  <div id="menu" class="hidden">
+    <button onclick="showPage('formPage')">🏠 Halaman Utama</button>
+    <button onclick="showPage('riwayatPage')">📄 Riwayat & Upload Ulang</button>
   </div>
 
-  <!-- Form Utama -->
+  <!-- HALAMAN FORM UTAMA -->
   <div id="formPage" class="page">
     <div class="logo-pdam">
       <img src="pdam logo.jpg" alt="Logo PDAM">
@@ -54,9 +54,9 @@
     </p>
   </div>
 
-  <!-- Riwayat Page -->
+  <!-- HALAMAN RIWAYAT & UPLOAD ULANG -->
   <div id="riwayatPage" class="page" style="display: none;">
-    <h2>Riwayat Data Tertunda</h2>
+    <h2>Riwayat Kunjungan</h2>
     <div id="riwayatList">
       <p>🔄 Memuat data...</p>
     </div>
