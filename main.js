@@ -1,3 +1,5 @@
+// Versi final main.js WebApp Monitoring PDAM
+
 let latitude = "";
 let longitude = "";
 
@@ -21,7 +23,7 @@ function getLocation() {
   }
 }
 
-// Lookup pelanggan dari Google Sheets
+// Cari data pelanggan dari Google Sheet
 function lookupPelanggan() {
   const nomor = document.getElementById("nomorPelanggan").value.trim();
   if (nomor.length < 5) return;
@@ -53,7 +55,7 @@ function lookupPelanggan() {
     });
 }
 
-// Kirim data ke Google Sheets
+// Kirim data
 function submitData() {
   const nama = document.getElementById("nama").value.trim();
   const nomor = document.getElementById("nomorPelanggan").value.trim();
@@ -89,7 +91,6 @@ function submitData() {
       .then(() => {
         alert("✅ Berhasil dikirim!");
         saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-        clearTertunda(); // hapus data berhasil dari localStorage
         btn.disabled = false;
         btn.innerText = "Kirim";
         window.location.reload();
@@ -106,21 +107,36 @@ function submitData() {
   reader.readAsDataURL(file);
 }
 
-// Simpan ke localStorage
+// Simpan hanya jika gagal kirim
 function saveToHistory(data) {
-  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
-  logs.push(data);
-  localStorage.setItem("logPDAM", JSON.stringify(logs));
+  if (data.status === "tertunda") {
+    const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+    logs.push(data);
+    localStorage.setItem("logPDAM", JSON.stringify(logs));
+  }
 }
 
-// Hapus data status "berhasil" agar tidak penuhi storage
-function clearTertunda() {
+// Upload ulang data tertunda
+function uploadUlang(index) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
-  const tertunda = logs.filter(item => item.status !== "berhasil");
-  localStorage.setItem("logPDAM", JSON.stringify(tertunda));
+  const data = logs[index];
+
+  fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
+    method: "POST",
+    body: new URLSearchParams(data)
+  })
+    .then(res => res.text())
+    .then(() => {
+      logs[index].status = "berhasil";
+      localStorage.setItem("logPDAM", JSON.stringify(logs));
+      tampilkanRiwayat();
+    })
+    .catch(() => {
+      alert("❌ Gagal upload ulang.");
+    });
 }
 
-// Tampilkan riwayat lokal
+// Tampilkan data lokal
 function tampilkanRiwayat() {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const div = document.getElementById("riwayat");
@@ -145,27 +161,7 @@ function tampilkanRiwayat() {
   });
 }
 
-// Upload ulang data tertunda
-function uploadUlang(index) {
-  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
-  const data = logs[index];
-
-  fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
-    method: "POST",
-    body: new URLSearchParams(data)
-  })
-    .then(res => res.text())
-    .then(() => {
-      logs[index].status = "berhasil";
-      localStorage.setItem("logPDAM", JSON.stringify(logs));
-      tampilkanRiwayat();
-    })
-    .catch(() => {
-      alert("❌ Gagal upload ulang.");
-    });
-}
-
-// QR Code Scanner
+// QR SCAN
 function startQRScan() {
   const qrDiv = document.getElementById("reader");
   qrDiv.style.display = "block";
@@ -186,7 +182,11 @@ function startQRScan() {
   });
 }
 
-// Navigasi antar halaman
+// Navigasi halaman dan menu
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
 function showPage(pageId) {
   document.getElementById("formPage").style.display = "none";
   document.getElementById("riwayatPage").style.display = "none";
@@ -195,19 +195,14 @@ function showPage(pageId) {
   document.getElementById("menu").classList.add("hidden");
 
   if (pageId === "riwayatPage") {
-    loadRiwayat();       // dari Google Sheet
-    tampilkanRiwayat();  // dari localStorage
+    loadRiwayat();
   }
 }
 
-// Menu hamburger
-function toggleMenu() {
-  document.getElementById("menu").classList.toggle("hidden");
-}
-
-// Load data riwayat dari Google Sheet
+// Load riwayat hanya dari petugas ini
 function loadRiwayat() {
   const riwayatList = document.getElementById("riwayatList");
+  const namaPetugas = document.getElementById("nama").value.trim().toLowerCase();
   riwayatList.innerHTML = "⏳ Memuat data...";
 
   fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec?log=true")
@@ -218,16 +213,23 @@ function loadRiwayat() {
         return;
       }
 
+      const dataPetugas = data.filter(row => (row[1] || "").toLowerCase() === namaPetugas);
+
+      if (dataPetugas.length === 0) {
+        riwayatList.innerHTML = "<p>Tidak ada data kunjungan oleh Anda.</p>";
+        return;
+      }
+
       riwayatList.innerHTML = "";
-      data.forEach(row => {
+      dataPetugas.forEach(row => {
         const div = document.createElement("div");
         div.className = "riwayat-card";
         div.innerHTML = `
           <p><strong>Nama:</strong> ${row[1]}</p>
           <p><strong>No PDAM:</strong> ${row[2]}</p>
           <p><strong>Lokasi:</strong> ${row[3]}, ${row[4]}</p>
-          <p><strong>Catatan:</strong> ${row[6]}</p>
-          <p><a href="${row[5]}" target="_blank">📷 Lihat Foto</a></p>
+          <p><strong>Catatan:</strong> ${row[5]}</p>
+          <p><a href="${row[6]}" target="_blank">📷 Lihat Foto</a></p>
           <p><em>${new Date(row[0]).toLocaleString()}</em></p>
         `;
         riwayatList.appendChild(div);
