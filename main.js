@@ -1,4 +1,4 @@
-// Versi Final main.js Monitoring PDAM - Kompatibel dengan HTML & CSS terbaru
+// Versi Final main.js Monitoring PDAM - Kompatibel dengan HTML & CSS terbaru + Spinner Upload Upgrade
 
 let latitude = "";
 let longitude = "";
@@ -74,7 +74,7 @@ function submitData() {
   }
 
   btn.disabled = true;
-  btn.innerText = "⏳ Mengirim...";
+  btn.innerHTML = `<span class="spinner"></span>Mengirim...`;
 
   const reader = new FileReader();
   reader.onload = function () {
@@ -104,7 +104,7 @@ function submitData() {
     })
     .finally(() => {
       btn.disabled = false;
-      btn.innerText = "Kirim";
+      btn.innerHTML = "Kirim";
     });
   };
 
@@ -138,6 +138,10 @@ function uploadUlang(index) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const data = logs[index];
 
+  const button = document.querySelectorAll("#riwayatList button")[index];
+  button.disabled = true;
+  button.innerHTML = `<span class='spinner'></span>Mengupload...`;
+
   fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
     method: "POST",
     body: new URLSearchParams(data)
@@ -146,6 +150,7 @@ function uploadUlang(index) {
     .then(() => {
       logs[index].status = "berhasil";
       localStorage.setItem("logPDAM", JSON.stringify(logs));
+      alert("✅ Berhasil diupload ulang!");
       tampilkanRiwayat();
       tampilkanOfflineLog();
     })
@@ -157,28 +162,44 @@ function uploadUlang(index) {
 // Upload ulang semua
 function uploadSemua() {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+  const button = document.querySelector("button[onclick='uploadSemua()']");
+  button.disabled = true;
+  button.innerHTML = `<span class='spinner'></span>Mengupload semua...`;
 
-  logs.forEach((data, i) => {
+  let adaYangTertunda = false;
+
+  const promises = logs.map((data, i) => {
     if (data.status === "tertunda") {
-      fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
+      adaYangTertunda = true;
+      return fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
         method: "POST",
         body: new URLSearchParams(data)
       })
         .then(res => res.text())
         .then(() => {
           logs[i].status = "berhasil";
-          localStorage.setItem("logPDAM", JSON.stringify(logs));
-          tampilkanRiwayat();
-          tampilkanOfflineLog();
         });
     }
+  });
+
+  Promise.all(promises).then(() => {
+    if (adaYangTertunda) {
+      localStorage.setItem("logPDAM", JSON.stringify(logs));
+      tampilkanRiwayat();
+      tampilkanOfflineLog();
+      alert("✅ Semua data tertunda telah diupload.");
+    } else {
+      alert("ℹ️ Tidak ada data tertunda.");
+    }
+    button.disabled = false;
+    button.innerHTML = "🔁 Upload Ulang Semua";
   });
 }
 
 // Tampilkan data lokal
 function tampilkanRiwayat() {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
-  const div = document.getElementById("riwayat");
+  const div = document.getElementById("riwayatList");
   if (!div) return;
 
   div.innerHTML = "";
@@ -188,7 +209,8 @@ function tampilkanRiwayat() {
     return;
   }
 
-  logs.reverse().forEach((log, i) => {
+  logs.slice().reverse().forEach((log, index) => {
+    const i = logs.length - 1 - index;
     const card = document.createElement("div");
     card.className = "riwayat-card";
     card.innerHTML = `
