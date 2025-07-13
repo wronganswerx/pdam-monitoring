@@ -21,7 +21,7 @@ function getLocation() {
   }
 }
 
-// Cari data pelanggan dari Google Sheet
+// Lookup pelanggan dari Google Sheets
 function lookupPelanggan() {
   const nomor = document.getElementById("nomorPelanggan").value.trim();
   if (nomor.length < 5) return;
@@ -53,7 +53,7 @@ function lookupPelanggan() {
     });
 }
 
-// Kirim data
+// Kirim data ke Google Sheets
 function submitData() {
   const nama = document.getElementById("nama").value.trim();
   const nomor = document.getElementById("nomorPelanggan").value.trim();
@@ -89,6 +89,7 @@ function submitData() {
       .then(() => {
         alert("✅ Berhasil dikirim!");
         saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
+        clearTertunda(); // hapus data berhasil dari localStorage
         btn.disabled = false;
         btn.innerText = "Kirim";
         window.location.reload();
@@ -105,14 +106,21 @@ function submitData() {
   reader.readAsDataURL(file);
 }
 
-// Simpan data lokal
+// Simpan ke localStorage
 function saveToHistory(data) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   logs.push(data);
   localStorage.setItem("logPDAM", JSON.stringify(logs));
 }
 
-// Tampilkan riwayat
+// Hapus data status "berhasil" agar tidak penuhi storage
+function clearTertunda() {
+  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+  const tertunda = logs.filter(item => item.status !== "berhasil");
+  localStorage.setItem("logPDAM", JSON.stringify(tertunda));
+}
+
+// Tampilkan riwayat lokal
 function tampilkanRiwayat() {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const div = document.getElementById("riwayat");
@@ -157,7 +165,7 @@ function uploadUlang(index) {
     });
 }
 
-// QR SCAN
+// QR Code Scanner
 function startQRScan() {
   const qrDiv = document.getElementById("reader");
   qrDiv.style.display = "block";
@@ -178,18 +186,54 @@ function startQRScan() {
   });
 }
 
-// Navigasi halaman
+// Navigasi antar halaman
 function showPage(pageId) {
-  document.getElementById("formPage").style.display = pageId === "formPage" ? "block" : "none";
-  document.getElementById("riwayatPage").style.display = pageId === "riwayatPage" ? "block" : "none";
+  document.getElementById("formPage").style.display = "none";
+  document.getElementById("riwayatPage").style.display = "none";
+
+  document.getElementById(pageId).style.display = "block";
+  document.getElementById("menu").classList.add("hidden");
 
   if (pageId === "riwayatPage") {
-    tampilkanRiwayat();
+    loadRiwayat();       // dari Google Sheet
+    tampilkanRiwayat();  // dari localStorage
   }
 }
 
 // Menu hamburger
 function toggleMenu() {
-  const menu = document.getElementById("menu");
-  menu.classList.toggle("show");
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+// Load data riwayat dari Google Sheet
+function loadRiwayat() {
+  const riwayatList = document.getElementById("riwayatList");
+  riwayatList.innerHTML = "⏳ Memuat data...";
+
+  fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec?log=true")
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data)) {
+        riwayatList.innerHTML = "❌ Gagal ambil data riwayat.";
+        return;
+      }
+
+      riwayatList.innerHTML = "";
+      data.forEach(row => {
+        const div = document.createElement("div");
+        div.className = "riwayat-card";
+        div.innerHTML = `
+          <p><strong>Nama:</strong> ${row[1]}</p>
+          <p><strong>No PDAM:</strong> ${row[2]}</p>
+          <p><strong>Lokasi:</strong> ${row[3]}, ${row[4]}</p>
+          <p><strong>Catatan:</strong> ${row[6]}</p>
+          <p><a href="${row[5]}" target="_blank">📷 Lihat Foto</a></p>
+          <p><em>${new Date(row[0]).toLocaleString()}</em></p>
+        `;
+        riwayatList.appendChild(div);
+      });
+    })
+    .catch(() => {
+      riwayatList.innerHTML = "❌ Gagal ambil data riwayat.";
+    });
 }
