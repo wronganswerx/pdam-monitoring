@@ -3,6 +3,8 @@ body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
+  background: #fff;
+  color: #000;
 }
 
 .page {
@@ -61,6 +63,8 @@ button:hover {
   text-align: center;
   margin-top: 10px;
   font-size: 14px;
+  font-style: italic;
+  color: #444;
 }
 
 /* ====== Footer ====== */
@@ -124,52 +128,9 @@ button:hover {
   background: #ddd;
 }
 
-/* Aktif Menu */
 #menu button.active {
   background-color: #007bff;
   color: white;
-}
-
-/* ====== Dark Mode Adaptasi ====== */
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #121212;
-    color: #eee;
-  }
-
-  #menu {
-    background: #222;
-    border-color: #444;
-  }
-
-  #menu button {
-    color: white;
-    background-color: #333;
-  }
-
-  #menu button:hover {
-    background-color: #555;
-  }
-
-  #menu button.active {
-    background-color: #007bff;
-    color: #fff;
-  }
-
-  .riwayat-card {
-    background: #1e1e1e;
-    border-color: #444;
-  }
-
-  .offline-log {
-    background: #665c00;
-    border-color: #ffdd57;
-    color: white;
-  }
-
-  .footer {
-    color: #999;
-  }
 }
 
 /* ====== Riwayat ====== */
@@ -187,6 +148,24 @@ button:hover {
 
 .riwayat-card p {
   margin: 4px 0;
+  color: #333;
+}
+
+.riwayat-card a {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.riwayat-card a:hover {
+  text-decoration: underline;
+}
+
+.riwayat-card em {
+  color: #666;
+  font-size: 13px;
+  display: block;
+  margin-top: 4px;
 }
 
 /* Tombol Upload Ulang */
@@ -213,4 +192,69 @@ button:hover {
   border-radius: 8px;
   font-size: 14px;
   color: #333;
+}
+
+/* ====== Dark Mode Adaptasi ====== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121212;
+    color: #eee;
+  }
+
+  #lokasiText {
+    color: #ccc;
+  }
+
+  #menu {
+    background: #222;
+    border-color: #444;
+  }
+
+  #menu button {
+    color: white;
+    background-color: #333;
+  }
+
+  #menu button:hover {
+    background-color: #555;
+  }
+
+  #menu button.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .riwayat-card {
+    background: #1e1e1e;
+    border-color: #444;
+  }
+
+  .riwayat-card p {
+    color: #ddd;
+  }
+
+  .riwayat-card em {
+    color: #aaa;
+  }
+
+  .riwayat-card a {
+    color: #66bfff;
+  }
+
+  .offline-log {
+    background: #665c00;
+    border-color: #ffdd57;
+    color: white;
+  }
+
+  .footer {
+    color: #999;
+  }
+
+  input[type="text"],
+  input[type="file"] {
+    background: #1e1e1e;
+    color: #eee;
+    border-color: #444;
+  }
 }
