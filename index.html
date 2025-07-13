@@ -29,6 +29,8 @@
     <label>Nomor Pelanggan:</label>
     <input type="text" id="nomorPelanggan" placeholder="Contoh: 11010001" onblur="lookupPelanggan()" />
 
+    <button onclick="startQRScan()">📷 Scan QR</button>
+
     <div class="lookup-result">
       <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
       <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
@@ -49,6 +51,7 @@
 
     <button id="submitBtn" onclick="submitData()">Kirim</button>
 
+    <!-- Tempat muncul QR scanner -->
     <div id="reader" style="display: none;"></div>
 
     <p class="footer">WebApp ini masih uji coba yang disusun oleh Irsyad</p>
@@ -61,7 +64,7 @@
       <p>⏳ Memuat data...</p>
     </div>
 
-    <button onclick="uploadSemua()">Upload Ulang Semua</button>
+    <button onclick="uploadSemua()">🔁 Upload Ulang Semua</button>
     <button onclick="tampilkanOfflineLog()">📦 Lihat Data Tertunda (Offline)</button>
     <div id="offlineLog" class="offline-log" style="display: none;"></div>
   </div>
