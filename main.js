@@ -3,6 +3,11 @@
 let latitude = "";
 let longitude = "";
 
+// Validasi ketersediaan QR scanner
+if (typeof Html5Qrcode === "undefined") {
+  console.warn("Fitur QR Scan tidak tersedia. Pastikan html5-qrcode sudah di-include.");
+}
+
 // Ambil lokasi GPS
 function getLocation() {
   const lokasiText = document.getElementById("lokasiText");
