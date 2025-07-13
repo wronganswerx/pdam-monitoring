@@ -87,24 +87,39 @@ function submitData() {
       method: "POST",
       body: new URLSearchParams(formData)
     })
-      .then(res => res.text())
-      .then(() => {
-        alert("✅ Berhasil dikirim!");
-        saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-        btn.disabled = false;
-        btn.innerText = "Kirim";
-        window.location.reload();
-      })
-      .catch(err => {
-        alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
-        saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-        btn.disabled = false;
-        btn.innerText = "Kirim";
-        window.location.reload();
-      });
+    .then(res => res.text())
+    .then(() => {
+      alert("✅ Berhasil dikirim!");
+      saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
+      btn.disabled = false;
+      btn.innerText = "Kirim";
+      resetForm();
+    })
+    .catch(err => {
+      alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
+      saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
+      btn.disabled = false;
+      btn.innerText = "Kirim";
+      resetForm();
+    });
   };
 
   reader.readAsDataURL(file);
+}
+
+function resetForm() {
+  document.getElementById("foto").value = "";
+  document.getElementById("catatan").value = "";
+  document.getElementById("nomorPelanggan").value = "";
+  document.getElementById("namaPelanggan").innerText = "-";
+  document.getElementById("alamatPelanggan").innerText = "-";
+  document.getElementById("kelurahanPelanggan").innerText = "-";
+  document.getElementById("rtrwPelanggan").innerText = "-";
+  document.getElementById("golonganPelanggan").innerText = "-";
+  document.getElementById("meterPelanggan").innerText = "-";
+  document.getElementById("lokasiText").innerText = "Lokasi: belum diambil";
+  latitude = "";
+  longitude = "";
 }
 
 // Simpan hanya jika gagal kirim
@@ -182,11 +197,12 @@ function startQRScan() {
   });
 }
 
-// Navigasi halaman dan menu
+// Menu hamburger
 function toggleMenu() {
   document.getElementById("menu").classList.toggle("hidden");
 }
 
+// Navigasi halaman dan filter riwayat
 function showPage(pageId) {
   document.getElementById("formPage").style.display = "none";
   document.getElementById("riwayatPage").style.display = "none";
@@ -199,11 +215,17 @@ function showPage(pageId) {
   }
 }
 
-// Load riwayat hanya dari petugas ini
+// Load riwayat hanya milik petugas ini
 function loadRiwayat() {
   const riwayatList = document.getElementById("riwayatList");
   const namaPetugas = document.getElementById("nama").value.trim().toLowerCase();
+
   riwayatList.innerHTML = "⏳ Memuat data...";
+
+  if (!namaPetugas) {
+    riwayatList.innerHTML = "<p>Masukkan nama petugas terlebih dahulu.</p>";
+    return;
+  }
 
   fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec?log=true")
     .then(res => res.json())
