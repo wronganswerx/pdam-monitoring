@@ -1,7 +1,14 @@
+/* ====== Layout Umum ====== */
 body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
+}
+
+.page {
+  padding: 15px;
+  max-width: 600px;
+  margin: auto;
 }
 
 h2 {
@@ -15,13 +22,15 @@ h2 {
   display: block;
 }
 
+/* ====== Form ====== */
 label {
   display: block;
   margin: 10px 0 5px;
   font-weight: bold;
 }
 
-input[type="text"], input[type="file"] {
+input[type="text"],
+input[type="file"] {
   width: 90%;
   padding: 8px;
   margin-bottom: 10px;
@@ -47,12 +56,14 @@ button:hover {
   background-color: #0056b3;
 }
 
+/* ====== Lokasi ====== */
 #lokasiText {
   text-align: center;
   margin-top: 10px;
   font-size: 14px;
 }
 
+/* ====== Footer ====== */
 .footer {
   text-align: center;
   margin-top: 30px;
@@ -60,17 +71,12 @@ button:hover {
   color: #777;
 }
 
-.page {
-  padding: 15px;
-  max-width: 600px;
-  margin: auto;
-}
-
+/* ====== Lookup ====== */
 .lookup-result p {
   margin: 3px 0;
 }
 
-/* Menu hamburger */
+/* ====== Hamburger Menu ====== */
 #menuToggle {
   position: fixed;
   top: 15px;
@@ -109,13 +115,64 @@ button:hover {
   text-align: left;
   cursor: pointer;
   font-size: 16px;
+  color: #000;
+  background-color: #f0f0f0;
+  transition: background 0.3s;
 }
 
 #menu button:hover {
-  background: #f0f0f0;
+  background: #ddd;
 }
 
-/* Riwayat */
+/* Aktif Menu */
+#menu button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ====== Dark Mode Adaptasi ====== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121212;
+    color: #eee;
+  }
+
+  #menu {
+    background: #222;
+    border-color: #444;
+  }
+
+  #menu button {
+    color: white;
+    background-color: #333;
+  }
+
+  #menu button:hover {
+    background-color: #555;
+  }
+
+  #menu button.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .riwayat-card {
+    background: #1e1e1e;
+    border-color: #444;
+  }
+
+  .offline-log {
+    background: #665c00;
+    border-color: #ffdd57;
+    color: white;
+  }
+
+  .footer {
+    color: #999;
+  }
+}
+
+/* ====== Riwayat ====== */
 #riwayatList {
   padding: 15px;
 }
@@ -130,4 +187,30 @@ button:hover {
 
 .riwayat-card p {
   margin: 4px 0;
+}
+
+/* Tombol Upload Ulang */
+.riwayat-card button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.riwayat-card button:hover {
+  background-color: #218838;
+}
+
+/* ====== Offline Log Notif ====== */
+.offline-log {
+  background: #ffeaa7;
+  border: 1px solid #fdcb6e;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
 }
