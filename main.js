@@ -1,4 +1,4 @@
-// Versi final main.js WebApp Monitoring PDAM
+// Versi Final main.js Monitoring PDAM - Kompatibel dengan HTML & CSS terbaru
 
 let latitude = "";
 let longitude = "";
@@ -23,7 +23,7 @@ function getLocation() {
   }
 }
 
-// Cari data pelanggan dari Google Sheet
+// Lookup pelanggan
 function lookupPelanggan() {
   const nomor = document.getElementById("nomorPelanggan").value.trim();
   if (nomor.length < 5) return;
@@ -95,7 +95,7 @@ function submitData() {
       btn.innerText = "Kirim";
       resetForm();
     })
-    .catch(err => {
+    .catch(() => {
       alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
       saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
       btn.disabled = false;
@@ -122,16 +122,14 @@ function resetForm() {
   longitude = "";
 }
 
-// Simpan hanya jika gagal kirim
+// Simpan jika gagal kirim
 function saveToHistory(data) {
-  if (data.status === "tertunda") {
-    const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
-    logs.push(data);
-    localStorage.setItem("logPDAM", JSON.stringify(logs));
-  }
+  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+  logs.push(data);
+  localStorage.setItem("logPDAM", JSON.stringify(logs));
 }
 
-// Upload ulang data tertunda
+// Upload ulang satuan
 function uploadUlang(index) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const data = logs[index];
@@ -145,16 +143,40 @@ function uploadUlang(index) {
       logs[index].status = "berhasil";
       localStorage.setItem("logPDAM", JSON.stringify(logs));
       tampilkanRiwayat();
+      tampilkanOfflineLog();
     })
     .catch(() => {
       alert("❌ Gagal upload ulang.");
     });
 }
 
+// Upload ulang semua
+function uploadSemua() {
+  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+
+  logs.forEach((data, i) => {
+    if (data.status === "tertunda") {
+      fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
+        method: "POST",
+        body: new URLSearchParams(data)
+      })
+        .then(res => res.text())
+        .then(() => {
+          logs[i].status = "berhasil";
+          localStorage.setItem("logPDAM", JSON.stringify(logs));
+          tampilkanRiwayat();
+          tampilkanOfflineLog();
+        });
+    }
+  });
+}
+
 // Tampilkan data lokal
 function tampilkanRiwayat() {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const div = document.getElementById("riwayat");
+  if (!div) return;
+
   div.innerHTML = "";
 
   if (logs.length === 0) {
@@ -197,12 +219,11 @@ function startQRScan() {
   });
 }
 
-// Menu hamburger
+// Navigasi
 function toggleMenu() {
   document.getElementById("menu").classList.toggle("hidden");
 }
 
-// Navigasi halaman dan filter riwayat
 function showPage(pageId) {
   document.getElementById("formPage").style.display = "none";
   document.getElementById("riwayatPage").style.display = "none";
@@ -215,17 +236,17 @@ function showPage(pageId) {
   }
 }
 
-// Load riwayat hanya milik petugas ini
+// Riwayat kunjungan dari server
 function loadRiwayat() {
   const riwayatList = document.getElementById("riwayatList");
   const namaPetugas = document.getElementById("nama").value.trim().toLowerCase();
 
-  riwayatList.innerHTML = "⏳ Memuat data...";
-
-  if (!namaPetugas) {
+  if (!riwayatList || !namaPetugas) {
     riwayatList.innerHTML = "<p>Masukkan nama petugas terlebih dahulu.</p>";
     return;
   }
+
+  riwayatList.innerHTML = "⏳ Memuat data...";
 
   fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec?log=true")
     .then(res => res.json())
@@ -260,4 +281,21 @@ function loadRiwayat() {
     .catch(() => {
       riwayatList.innerHTML = "❌ Gagal ambil data riwayat.";
     });
+}
+
+// Tampilkan data tertunda (offline)
+function tampilkanOfflineLog() {
+  const div = document.getElementById("offlineLog");
+  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+  const tertunda = logs.filter(log => log.status === "tertunda");
+
+  if (tertunda.length === 0) {
+    div.innerHTML = "<p>Tidak ada data offline yang tertunda.</p>";
+  } else {
+    div.innerHTML = "<b>🗃 Data Tertunda (Offline):</b><ul>" +
+      tertunda.map(log => `<li>${log.nama} (${log.nomor}) - Lokasi: ${log.latitude}, ${log.longitude}</li>`).join("") +
+      "</ul>";
+  }
+
+  div.style.display = "block";
 }
