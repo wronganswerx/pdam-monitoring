@@ -101,6 +101,7 @@ function submitData() {
     .catch(() => {
       alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
       saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
+      resetForm(); // <<--- Reset form tetap meskipun gagal
     })
     .finally(() => {
       btn.disabled = false;
