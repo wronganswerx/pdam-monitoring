@@ -9,10 +9,10 @@
 <body>
 
   <!-- Tombol Menu Hamburger -->
-  <div id="menuToggle" onclick="toggleMenu()">☰</div>
+  <div id="menuToggle">☰</div>
   <div id="menu" class="hidden">
-    <button onclick="showPage('formPage')">🏠 Halaman Utama</button>
-    <button onclick="showPage('riwayatPage')">📄 Riwayat & Upload Ulang</button>
+    <button data-page="formPage">🏠 Halaman Utama</button>
+    <button data-page="riwayatPage">📄 Riwayat & Upload Ulang</button>
   </div>
 
   <!-- HALAMAN UTAMA -->
@@ -23,33 +23,35 @@
 
     <h2>Monitoring RPP PDAM</h2>
 
-    <label>Nama Petugas:</label>
-    <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad" />
+    <form id="form">
+      <label>Nama Petugas:</label>
+      <input type="text" id="nama" placeholder="Contoh: Irsyad Muhammad" required />
 
-    <label>Nomor Pelanggan:</label>
-    <input type="text" id="nomorPelanggan" placeholder="Contoh: 11010001" onblur="lookupPelanggan()" />
+      <label>Nomor Pelanggan:</label>
+      <input type="text" id="nomorPelanggan" placeholder="Contoh: 11010001" required />
 
-    <button onclick="startQRScan()">📷 Scan QR</button>
+      <button type="button" id="scanQR">📷 Scan QR</button>
 
-    <div class="lookup-result">
-      <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
-      <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
-      <p><strong>Kelurahan:</strong> <span id="kelurahanPelanggan">-</span></p>
-      <p><strong>RT / RW:</strong> <span id="rtrwPelanggan">-</span></p>
-      <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
-      <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
-    </div>
+      <div class="lookup-result">
+        <p><strong>Nama:</strong> <span id="namaPelanggan">-</span></p>
+        <p><strong>Alamat:</strong> <span id="alamatPelanggan">-</span></p>
+        <p><strong>Kelurahan:</strong> <span id="kelurahanPelanggan">-</span></p>
+        <p><strong>RT / RW:</strong> <span id="rtrwPelanggan">-</span></p>
+        <p><strong>Golongan:</strong> <span id="golonganPelanggan">-</span></p>
+        <p><strong>No Water Meter:</strong> <span id="meterPelanggan">-</span></p>
+      </div>
 
-    <label>Foto Rumah:</label>
-    <input type="file" id="foto" accept="image/*" capture="environment" />
+      <label>Foto Rumah:</label>
+      <input type="file" id="foto" accept="image/*" capture="environment" />
 
-    <label>Catatan Petugas:</label>
-    <input type="text" id="catatan" placeholder="Misal: Pelanggan akan membayar pada 20 juni jika tidak disegel, dsb" />
+      <label>Catatan Petugas:</label>
+      <input type="text" id="catatan" placeholder="Misal: Akan membayar tanggal 20..." />
 
-    <button onclick="getLocation()">Ambil Lokasi</button>
-    <p id="lokasiText">Lokasi: belum diambil</p>
+      <button type="button" id="ambilLokasi">Ambil Lokasi</button>
+      <p id="lokasiText">Lokasi: belum diambil</p>
 
-    <button id="submitBtn" onclick="submitData()">Kirim</button>
+      <button type="submit" id="submitBtn">Kirim</button>
+    </form>
 
     <!-- Tempat muncul QR scanner -->
     <div id="reader" style="display: none;"></div>
@@ -64,12 +66,12 @@
       <p>⏳ Memuat data...</p>
     </div>
 
-    <button onclick="uploadSemua()">🔁 Upload Ulang Semua</button>
-    <button onclick="tampilkanOfflineLog()">📦 Lihat Data Tertunda (Offline)</button>
+    <button id="uploadSemua">🔁 Upload Ulang Semua</button>
+    <button id="lihatOffline">📦 Lihat Data Tertunda (Offline)</button>
     <div id="offlineLog" class="offline-log" style="display: none;"></div>
   </div>
 
-  <!-- ⬇ Tambahkan ini untuk memuat library scanner -->
+  <!-- Tambahkan library QR dan script utama -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="main.js"></script>
 </body>
