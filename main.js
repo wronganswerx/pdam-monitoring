@@ -1,4 +1,4 @@
-// Versi Final main.js Monitoring PDAM - Kompatibel dengan HTML & CSS terbaru + Spinner Upload Upgrade
+// Versi Final main.js Monitoring PDAM - Kompatibel Semua Device + Fix Duplikat Alert & Reset
 
 let latitude = "";
 let longitude = "";
@@ -88,30 +88,39 @@ function submitData() {
       foto: base64Foto
     };
 
+    let isHandled = false;
+
     fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
       method: "POST",
       body: new URLSearchParams(formData)
     })
-    .then(res => res.text())
-    .then(() => {
-      alert("✅ Berhasil dikirim!");
-      saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-      resetForm();
-    })
-    .catch(() => {
-      alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
-      saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-      resetForm(); // <<--- Reset form tetap meskipun gagal
-    })
-    .finally(() => {
-      btn.disabled = false;
-      btn.innerHTML = "Kirim";
-    });
+      .then(res => res.text())
+      .then(() => {
+        if (!isHandled) {
+          isHandled = true;
+          alert("✅ Berhasil dikirim!");
+          saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
+          resetForm();
+        }
+      })
+      .catch(() => {
+        if (!isHandled) {
+          isHandled = true;
+          alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
+          saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
+          resetForm();
+        }
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = "Kirim";
+      });
   };
 
   reader.readAsDataURL(file);
 }
 
+// Fungsi reset
 function resetForm() {
   document.getElementById("foto").value = "";
   document.getElementById("catatan").value = "";
@@ -126,6 +135,9 @@ function resetForm() {
   latitude = "";
   longitude = "";
 }
+
+// Sisanya tetap (upload ulang, riwayat, navigasi, QR, dsb)
+// Tidak diubah karena sudah aman
 
 // Simpan jika gagal kirim
 function saveToHistory(data) {
