@@ -90,6 +90,13 @@ function submitData() {
 
     let isHandled = false;
 
+    const resetAndEnable = () => {
+      isHandled = true;
+      btn.disabled = false;
+      btn.innerHTML = "Kirim";
+      resetForm();
+    };
+
     fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
       method: "POST",
       body: new URLSearchParams(formData)
@@ -97,23 +104,17 @@ function submitData() {
       .then(res => res.text())
       .then(() => {
         if (!isHandled) {
-          isHandled = true;
           alert("✅ Berhasil dikirim!");
           saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-          resetForm();
+          resetAndEnable();
         }
       })
       .catch(() => {
         if (!isHandled) {
-          isHandled = true;
           alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
           saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-          setTimeout(resetForm, 100); // Memastikan resetForm tetap jalan di HP
+          setTimeout(resetAndEnable, 100); // pastikan jalan di HP
         }
-      })
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = "Kirim";
       });
   };
 
