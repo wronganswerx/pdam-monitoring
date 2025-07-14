@@ -60,22 +60,6 @@ function lookupPelanggan() {
     });
 }
 
-// Fungsi reset form
-function resetForm() {
-  document.getElementById("foto").value = "";
-  document.getElementById("catatan").value = "";
-  document.getElementById("nomorPelanggan").value = "";
-  document.getElementById("namaPelanggan").innerText = "-";
-  document.getElementById("alamatPelanggan").innerText = "-";
-  document.getElementById("kelurahanPelanggan").innerText = "-";
-  document.getElementById("rtrwPelanggan").innerText = "-";
-  document.getElementById("golonganPelanggan").innerText = "-";
-  document.getElementById("meterPelanggan").innerText = "-";
-  document.getElementById("lokasiText").innerText = "Lokasi: belum diambil";
-  latitude = "";
-  longitude = "";
-}
-
 // Kirim data
 function submitData() {
   const nama = document.getElementById("nama").value.trim();
@@ -108,36 +92,53 @@ function submitData() {
       method: "POST",
       body: new URLSearchParams(formData)
     })
-      .then(res => res.text())
-      .then(() => {
-        alert("✅ Berhasil dikirim!");
-        saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-        resetForm();
-      })
-      .catch(() => {
-        alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
-        saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-        resetForm();
-      })
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = "Kirim";
-      });
+    .then(res => res.text())
+    .then(() => {
+      alert("✅ Berhasil dikirim!");
+      saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
+      resetForm();
+    })
+    .catch(() => {
+      alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
+      saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
+      resetForm(); // <<--- Reset form tetap meskipun gagal
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = "Kirim";
+    });
   };
+
   reader.readAsDataURL(file);
 }
 
-// Simpan data ke localStorage
+function resetForm() {
+  document.getElementById("foto").value = "";
+  document.getElementById("catatan").value = "";
+  document.getElementById("nomorPelanggan").value = "";
+  document.getElementById("namaPelanggan").innerText = "-";
+  document.getElementById("alamatPelanggan").innerText = "-";
+  document.getElementById("kelurahanPelanggan").innerText = "-";
+  document.getElementById("rtrwPelanggan").innerText = "-";
+  document.getElementById("golonganPelanggan").innerText = "-";
+  document.getElementById("meterPelanggan").innerText = "-";
+  document.getElementById("lokasiText").innerText = "Lokasi: belum diambil";
+  latitude = "";
+  longitude = "";
+}
+
+// Simpan jika gagal kirim
 function saveToHistory(data) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   logs.push(data);
   localStorage.setItem("logPDAM", JSON.stringify(logs));
 }
 
-// Fungsi upload ulang
+// Upload ulang satuan
 function uploadUlang(index) {
   const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
   const data = logs[index];
+
   const button = document.querySelectorAll("#riwayatList button")[index];
   button.disabled = true;
   button.innerHTML = `<span class='spinner'></span>Mengupload...`;
@@ -167,6 +168,7 @@ function uploadSemua() {
   button.innerHTML = `<span class='spinner'></span>Mengupload semua...`;
 
   let adaYangTertunda = false;
+
   const promises = logs.map((data, i) => {
     if (data.status === "tertunda") {
       adaYangTertunda = true;
@@ -192,6 +194,34 @@ function uploadSemua() {
     }
     button.disabled = false;
     button.innerHTML = "🔁 Upload Ulang Semua";
+  });
+}
+
+// Tampilkan data lokal
+function tampilkanRiwayat() {
+  const logs = JSON.parse(localStorage.getItem("logPDAM") || "[]");
+  const div = document.getElementById("riwayatList");
+  if (!div) return;
+
+  div.innerHTML = "";
+
+  if (logs.length === 0) {
+    div.innerHTML = "<p>Tidak ada data.</p>";
+    return;
+  }
+
+  logs.slice().reverse().forEach((log, index) => {
+    const i = logs.length - 1 - index;
+    const card = document.createElement("div");
+    card.className = "riwayat-card";
+    card.innerHTML = `
+      <b>${log.nama} (${log.nomor})</b><br>
+      <small>${log.waktu}</small><br>
+      <span>Status: ${log.status === "berhasil" ? "✅" : "⏳ Tertunda"}</span>
+      ${log.status === "tertunda" ? `<br><button onclick="uploadUlang(${i})">Upload Ulang</button>` : ""}
+      <hr>
+    `;
+    div.appendChild(card);
   });
 }
 
