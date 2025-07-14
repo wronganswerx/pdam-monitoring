@@ -1,4 +1,4 @@
-// Versi Final main.js Monitoring PDAM - Kompatibel Semua Device + Fix Duplikat Alert & Reset
+// Versi Final main.js Monitoring PDAM - Kompatibel Semua Device + Fix Duplikat Alert & Reset + Reset Aman di Semua Perangkat
 
 let latitude = "";
 let longitude = "";
@@ -108,7 +108,7 @@ function submitData() {
           isHandled = true;
           alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
           saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-          resetForm();
+          setTimeout(resetForm, 100); // Memastikan resetForm tetap jalan di HP
         }
       })
       .finally(() => {
