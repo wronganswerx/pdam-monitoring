@@ -1,4 +1,4 @@
-// Versi Final main.js Monitoring PDAM - Kompatibel Semua Device + Fix Duplikat Alert & Reset + Reset Aman di Semua Perangkat
+// Versi Final main.js Monitoring PDAM - Kompatibel Semua Device + Fix Duplikat Alert & Reset + Reset Aman di Semua Perangkat + Fix Tombol Stuck dan Submit Ganda
 
 let latitude = "";
 let longitude = "";
@@ -64,7 +64,8 @@ function lookupPelanggan() {
 function submitData() {
   const nama = document.getElementById("nama").value.trim();
   const nomor = document.getElementById("nomorPelanggan").value.trim();
-  const file = document.getElementById("foto").files[0];
+  const fileInput = document.getElementById("foto");
+  const file = fileInput.files[0];
   const catatan = document.getElementById("catatan").value.trim();
   const btn = document.getElementById("submitBtn");
 
@@ -73,49 +74,55 @@ function submitData() {
     return;
   }
 
+  if (btn.disabled) return;
+
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner"></span>Mengirim...`;
 
   const reader = new FileReader();
   reader.onload = function () {
-    const base64Foto = reader.result.split(",")[1];
-    const formData = {
-      nama,
-      nomor,
-      catatan,
-      latitude,
-      longitude,
-      foto: base64Foto
-    };
+    try {
+      const base64Foto = reader.result.split(",")[1];
+      const formData = {
+        nama,
+        nomor,
+        catatan,
+        latitude,
+        longitude,
+        foto: base64Foto
+      };
 
-    let isHandled = false;
+      let sudahJalan = false;
 
-    const resetAndEnable = () => {
-      isHandled = true;
-      btn.disabled = false;
-      btn.innerHTML = "Kirim";
-      resetForm();
-    };
+      const selesai = (status, simpanOffline = false) => {
+        if (sudahJalan) return;
+        sudahJalan = true;
 
-    fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
-      method: "POST",
-      body: new URLSearchParams(formData)
-    })
-      .then(res => res.text())
-      .then(() => {
-        if (!isHandled) {
-          alert("✅ Berhasil dikirim!");
-          saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
-          resetAndEnable();
-        }
-      })
-      .catch(() => {
-        if (!isHandled) {
+        if (simpanOffline) {
           alert("📥 Disimpan karena gagal kirim (offline/jaringan)");
           saveToHistory({ ...formData, status: "tertunda", waktu: new Date().toLocaleString() });
-          setTimeout(resetAndEnable, 100); // pastikan jalan di HP
+        } else {
+          alert("✅ Berhasil dikirim!");
+          saveToHistory({ ...formData, status: "berhasil", waktu: new Date().toLocaleString() });
         }
-      });
+
+        resetForm();
+        btn.disabled = false;
+        btn.innerHTML = "Kirim";
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwyKmL6dNBfr-VoP-JdTr2tO5ltDSmIDzKewQf0RsWepORUX1xW2C_L_-m3wCS8h4JE/exec", {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      })
+        .then(res => res.text())
+        .then(() => selesai("berhasil"))
+        .catch(() => setTimeout(() => selesai("tertunda", true), 100));
+    } catch (err) {
+      alert("❌ Terjadi kesalahan saat memproses data.");
+      btn.disabled = false;
+      btn.innerHTML = "Kirim";
+    }
   };
 
   reader.readAsDataURL(file);
@@ -139,6 +146,8 @@ function resetForm() {
 
 // Sisanya tetap (upload ulang, riwayat, navigasi, QR, dsb)
 // Tidak diubah karena sudah aman
+
+// ... (kode lainnya tetap seperti sebelumnya)
 
 // Simpan jika gagal kirim
 function saveToHistory(data) {
