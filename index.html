@@ -56,6 +56,12 @@
 
     <p class="footer">WebApp ini masih uji coba yang disusun oleh Irsyad</p>
   </div>
+    <button onclick="refreshPaksa()" style="
+    position: fixed; bottom: 12px; left: 12px;
+    z-index: 9999; padding: 6px 12px;
+    background-color: #f5d0d0; color: #333;
+    border: 1px solid #999; border-radius: 8px;
+    font-size: 12px;">⟳ Refresh Paksa</button>
 
   <!-- HALAMAN RIWAYAT -->
   <div id="riwayatPage" class="page" style="display: none;">
@@ -72,5 +78,38 @@
   <!-- ⬇ Tambahkan ini untuk memuat library scanner -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="main.js?v=7"></script>
+  <script>
+  function refreshPaksa() {
+    const nama = document.getElementById("nama").value.trim();
+    const nomor = document.getElementById("nomorPelanggan").value.trim();
+    const catatan = document.getElementById("catatan").value.trim();
+    const file = document.getElementById("foto").files[0];
+
+    if (!nama || !nomor || !file || !latitude || !longitude) {
+      alert("Data belum lengkap, tidak bisa disimpan.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const base64Foto = reader.result.split(",")[1];
+      const formData = {
+        nama,
+        nomor,
+        catatan,
+        latitude,
+        longitude,
+        foto: base64Foto,
+        status: "tertunda",
+        waktu: new Date().toLocaleString()
+      };
+      saveToHistory(formData);
+      alert("✅ Data disimpan ke daftar tertunda.");
+      resetForm();
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
+</body>
 </body>
 </html>
