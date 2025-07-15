@@ -79,6 +79,11 @@
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="main.js?v=99"></script>
   <script>
+    // Agar fungsi-fungsi bisa dipanggil dari inline script
+    window.saveToHistory = saveToHistory;
+    window.resetForm = resetForm;
+  </script>
+  <script>
   function refreshPaksa() {
     const nama = document.getElementById("nama").value.trim();
     const nomor = document.getElementById("nomorPelanggan").value.trim();
